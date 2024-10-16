@@ -4,6 +4,7 @@ from astropy.io import fits
 #jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
 
 #oezfboibezf
+
 # Trouver les fichiers qui correspondent à "*1225*.fits"
 # listfiles = glob.glob("/C:/Users/smeju/Desktop/MASTER_OSAE/TP/TP2/03-10-2024/*1225*.fits")
 # print("Fichiers trouvés : ", listfiles)
