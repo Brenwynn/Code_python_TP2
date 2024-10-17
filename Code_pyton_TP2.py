@@ -15,12 +15,12 @@ print("START")
 
 folder_path = "C:/Users/33778/Desktop/OSAE/TPs/TP2/03-10-2024/"
 
-darkPattern = os.path.join(folder_path, "brut/Test-mux-Oct3-2024-*-dark-75ms.fits") # '*' pour représenter la partie variable, ici: 1633 
+darkPattern = os.path.join(folder_path, "brut/Test-mux-Oct3-2024-*-dark-75ms*.fits") # '*' pour représenter la partie variable, ici: 1633 
 
 # Liste des fichiers de dark
 darkFiles = glob.glob(darkPattern)
 
-tmp=fits.getdata(darkFiles[0])
+tmp=fits.getdata(darkFiles[3])
 startReference = tmp[0,0,0:127,128:255]  # Début de la pose image 1
 startImage = tmp[1,0,0:127,128:255]  # Début de la pose image 2
 
@@ -140,11 +140,40 @@ avg_offset = np.mean(offset)
 print("Moyenne des pentes:", avg_slopes)
 print("Moyenne des offsets:", avg_offset)
 
+# Création des fichiers FITS pour slopes et offset
 
+# Création de l'objet HDU (Header/Data Unit) pour les pentes et offsets
+hdu_slopes = fits.PrimaryHDU(slopes)
+hdu_offset = fits.PrimaryHDU(offset)
+
+# Écriture des fichiers FITS
+hdu_slopes.writeto('slopes.fits', overwrite=True)  # Sauvegarder les pentes
+hdu_offset.writeto('offset.fits', overwrite=True)  # Sauvegarder les offsets
+
+print("Les fichiers slopes.fits et offset.fits ont été créés avec succès.")
+
+slopes_fits = fits.open('slopes.fits')
+offset_fits = fits.open('offset.fits')
+slopes_data = slopes_fits[0].data
+offset_data = offset_fits[0].data
+
+# Affichage de la matrice de slopes
+# im=plt.imshow(slopes_data,cmap='inferno', vmin=np.min(slopes_data), vmax=np.max(slopes_data))
+im=plt.imshow(slopes_data,cmap='inferno', vmin=0.05, vmax=0.35) ### qqs VALEURS ABERRANTES : si on veut voir les petites différences, -0.1 0.1
+
+plt.colorbar(im,format="%.4f")
+plt.title('Slopes')
+plt.show()
+
+# Affichage de la matrice d'offsets
+plt.imshow(offset_data, cmap='inferno', vmin=np.min(slopes_data), vmax=np.max(slopes_data))
+plt.colorbar()
+plt.title('Offsets')
+plt.show()
 
 #Tracé régression linéaire
-i=100
-j=1
+i=150
+j=150
 x = [
     avg_im75[i, j], 
     avg_im90[i, j], 
@@ -180,3 +209,6 @@ plt.title(f'Moyenne vs Variance pour le Pixel ({i}, {j})')
 plt.grid(True)
 plt.legend()
 plt.show()
+
+# recuperer gain et offset de chaque pixel, et tracer la carte 
+# 4 cartes : 2 à 3ms et 2 à 32ms
